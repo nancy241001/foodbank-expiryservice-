@@ -1,0 +1,15 @@
+{
+  "name": "foodbank-database",
+  "private": true,
+  "description": "Creates the shared Neon schema for all three services and loads demo data",
+  "scripts": {
+    "setup": "node setup.js",
+    "seed": "node seed.js",
+    "status": "node status.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^18.0.10",
+    "pg": "^8.23.1"
+  }
+}

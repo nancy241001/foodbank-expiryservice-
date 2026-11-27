@@ -1,0 +1,33 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ReportFilesOnlyUnderReportsPrefix",
+      "Effect": "Allow",
+      "Action": ["s3:PutObject", "s3:GetObject", "s3:DeleteObject"],
+      "Resource": "arn:aws:s3:::foodbank-reports/reports/*"
+    },
+    {
+      "Sid": "ReadAppAndSmtpSecrets",
+      "Effect": "Allow",
+      "Action": "secretsmanager:GetSecretValue",
+      "Resource": [
+        "arn:aws:secretsmanager:us-east-1:000000000000:secret:foodbank/nancy/app-*",
+        "arn:aws:secretsmanager:us-east-1:000000000000:secret:foodbank/nancy/smtp-*"
+      ]
+    },
+    {
+      "Sid": "WriteItsOwnLogs",
+      "Effect": "Allow",
+      "Action": ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"],
+      "Resource": "arn:aws:logs:us-east-1:000000000000:log-group:/aws/lambda/nancy-alerts-api:*"
+    },
+    {
+      "Sid": "PublishOnlyAlertMetrics",
+      "Effect": "Allow",
+      "Action": "cloudwatch:PutMetricData",
+      "Resource": "*",
+      "Condition": { "StringEquals": { "cloudwatch:namespace": "FoodBank/Alerts" } }
+    }
+  ]
+}

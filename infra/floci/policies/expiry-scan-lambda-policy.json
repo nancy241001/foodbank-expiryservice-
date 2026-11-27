@@ -1,0 +1,27 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ReadOnlyTheTwoSecretsItNeeds",
+      "Effect": "Allow",
+      "Action": "secretsmanager:GetSecretValue",
+      "Resource": [
+        "arn:aws:secretsmanager:us-east-1:000000000000:secret:foodbank/nancy/app-*",
+        "arn:aws:secretsmanager:us-east-1:000000000000:secret:foodbank/nancy/smtp-*"
+      ]
+    },
+    {
+      "Sid": "WriteItsOwnLogs",
+      "Effect": "Allow",
+      "Action": ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"],
+      "Resource": "arn:aws:logs:us-east-1:000000000000:log-group:/aws/lambda/nancy-expiry-scan:*"
+    },
+    {
+      "Sid": "PublishOnlyAlertMetrics",
+      "Effect": "Allow",
+      "Action": "cloudwatch:PutMetricData",
+      "Resource": "*",
+      "Condition": { "StringEquals": { "cloudwatch:namespace": "FoodBank/Alerts" } }
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+# Floci = local AWS emulator. Start with:  docker compose -f infra/floci/compose.yaml up -d
+services:
+  floci:
+    image: floci/floci:2.4.0
+    ports:
+      - "4566:4566"
+    environment:
+      FLOCI_STORAGE_MODE: hybrid          # keep data between restarts (flushed to ./data)
+      FLOCI_STORAGE_PERSISTENT_PATH: /app/data
+    volumes:
+      - ./data:/app/data                  # git-ignored
+      - /var/run/docker.sock:/var/run/docker.sock   # Lambda functions run in real Docker containers

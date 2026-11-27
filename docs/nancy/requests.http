@@ -1,0 +1,86 @@
+### Nancy - Expiry Alerts & Reporting: manual API tests (VS Code REST Client, Manual C)
+### Get tokens with:  npm run token -- 2 staff   /   npm run token -- 1 admin   (until Momen's login runs)
+@base = http://localhost:3003
+@auth = http://localhost:3002
+@token = PASTE_STAFF_TOKEN_HERE
+@adminToken = PASTE_ADMIN_TOKEN_HERE
+
+### Log in (staff)
+POST {{auth}}/api/auth/login
+Content-Type: application/json
+
+{ "email": "staff1@foodbank.local", "password": "YOUR_SEED_STAFF_PASSWORD" }
+
+### F1 - items expiring in the next 7 days (200)
+GET {{base}}/api/alerts/expiry?days=7
+Authorization: Bearer {{token}}
+
+### F1 - invalid days (400)
+GET {{base}}/api/alerts/expiry?days=500
+Authorization: Bearer {{token}}
+
+### F2 - run the scan (201)
+POST {{base}}/api/alerts/scan
+Authorization: Bearer {{token}}
+
+### F2 - list active alerts (200)
+GET {{base}}/api/alerts
+Authorization: Bearer {{token}}
+
+### F2 - acknowledge alert 1 (200, or 409 if not open)
+PATCH {{base}}/api/alerts/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "status": "acknowledged" }
+
+### F2 - resolve alert 1 as discarded (200)
+PATCH {{base}}/api/alerts/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "status": "resolved", "resolution_action": "discarded", "note": "Past date" }
+
+### SECURITY - staff changes settings (403)
+PUT {{base}}/api/alerts/settings
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "warning_days": 30, "critical_days": 2, "email_enabled": false, "notify_emails": [] }
+
+### Admin changes settings (200)
+PUT {{base}}/api/alerts/settings
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{ "warning_days": 7, "critical_days": 2, "email_enabled": true, "notify_emails": ["manager@example.com"] }
+
+### F3 - inventory report, dairy only (200)
+GET {{base}}/api/reports/inventory?category=dairy
+Authorization: Bearer {{token}}
+
+### F3 - distributions report for a date range (200)
+GET {{base}}/api/reports/distributions?from=2026-11-01&to=2026-11-30
+Authorization: Bearer {{token}}
+
+### F3 - impossible date (400)
+GET {{base}}/api/reports/distributions?from=2026-02-31
+Authorization: Bearer {{token}}
+
+### F4 - export waste report to S3 (201)
+POST {{base}}/api/reports/exports
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "type": "waste" }
+
+### F4 - list my exports (200)
+GET {{base}}/api/reports/exports
+Authorization: Bearer {{token}}
+
+### F4 - download link (200 owner / 403 another staff member)
+GET {{base}}/api/reports/exports/1/download
+Authorization: Bearer {{token}}
+
+### SECURITY - no token (401)
+GET {{base}}/api/alerts

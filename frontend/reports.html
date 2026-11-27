@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Reports - Food Bank</title>
+  <link rel="stylesheet" href="css/app.css" />
+</head>
+<body>
+  <main class="page">
+    <header class="page-head"><h1>Reports</h1></header>
+    <p id="msg" class="message" hidden></p>
+
+    <!-- F3: summary reports with category and date filters -->
+    <section class="card">
+      <form id="reportForm" class="filters">
+        <label>Report
+          <select name="type">
+            <option value="inventory">Inventory summary</option>
+            <option value="distributions">Distributions summary</option>
+            <option value="waste">Waste vs saved</option>
+          </select>
+        </label>
+        <label>Category <select name="category" class="category-select"><option value="">All</option></select></label>
+        <label>From <input type="date" name="from" /></label>
+        <label>To <input type="date" name="to" /></label>
+        <button type="submit">Show report</button>
+        <button type="button" id="exportBtn" class="secondary">Export as CSV</button>
+      </form>
+      <p id="dateHint" class="muted"></p>
+      <div id="tiles" class="tiles"></div>
+      <div class="table-wrap"><table id="reportTable"></table></div>
+    </section>
+
+    <!-- F4: saved exports (S3) with ownership -->
+    <section class="card">
+      <h2>Saved exports</h2>
+      <p class="muted">Files are stored privately. Download links work for 5 minutes. Staff see only their own exports.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Type</th><th>Filters</th><th>Rows</th><th>Created</th><th>Owner</th><th></th></tr></thead>
+          <tbody id="exportRows"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/reports.js"></script>
+</body>
+</html>

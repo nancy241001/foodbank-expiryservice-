@@ -1,0 +1,8 @@
+# Code ownership for the Expiry Alerts & Reporting component (Nancy).
+/services/alerts-reporting-service/  @nancy241001
+/frontend/alerts.html                @nancy241001
+/frontend/reports.html               @nancy241001
+/frontend/js/alerts.js               @nancy241001
+/frontend/js/reports.js              @nancy241001
+/infra/floci/setup-nancy.sh          @nancy241001
+/docs/nancy/                         @nancy241001

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Expiry Alerts - Food Bank</title>
+  <link rel="stylesheet" href="css/app.css" />
+</head>
+<body>
+  <main class="page">
+    <header class="page-head">
+      <h1>Expiry alerts</h1>
+      <button id="scanBtn" type="button">Run expiry scan now</button>
+    </header>
+    <p id="msg" class="message" hidden></p>
+
+    <!-- F2: alerts list with filters and the acknowledge / resolve workflow -->
+    <section class="card">
+      <h2>Alerts</h2>
+      <form id="alertFilters" class="filters">
+        <label>Status
+          <select name="status">
+            <option value="">Active (open + acknowledged)</option>
+            <option value="open">Open</option>
+            <option value="acknowledged">Acknowledged</option>
+            <option value="resolved">Resolved</option>
+          </select>
+        </label>
+        <label>Level
+          <select name="level">
+            <option value="">All</option><option value="expired">Expired</option>
+            <option value="critical">Critical</option><option value="warning">Warning</option>
+          </select>
+        </label>
+        <label>Category <select name="category" class="category-select"><option value="">All</option></select></label>
+        <button type="submit">Apply</button>
+      </form>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Level</th><th>Item</th><th>Category</th><th>Qty now</th><th>Expiry</th><th>Days left</th><th>Status</th><th>Handled by</th><th>Action</th></tr></thead>
+          <tbody id="alertRows"><tr><td colspan="9">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- F1: live look-up of items about to expire -->
+    <section class="card">
+      <h2>Look up items expiring soon</h2>
+      <form id="lookupForm" class="filters">
+        <label>Within (days) <input type="number" name="days" min="1" max="90" placeholder="default" /></label>
+        <label>Category <select name="category" class="category-select"><option value="">All</option></select></label>
+        <button type="submit">Search</button>
+      </form>
+      <p id="lookupInfo" class="muted"></p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Level</th><th>Item</th><th>Category</th><th>Quantity</th><th>Expiry</th><th>Days left</th><th>Location</th><th>Alert raised?</th></tr></thead>
+          <tbody id="lookupRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Settings: everyone can see, only admin can change (enforced by the API) -->
+    <section class="card">
+      <h2>Alert settings</h2>
+      <form id="settingsForm" class="filters">
+        <label>Warning window (days) <input type="number" name="warning_days" min="1" max="90" required /></label>
+        <label>Critical when (days left) &le; <input type="number" name="critical_days" min="0" max="30" required /></label>
+        <label class="inline"><input type="checkbox" name="email_enabled" /> Send email alerts</label>
+        <label class="wide">Email recipients (comma separated) <input type="text" name="notify_emails" /></label>
+        <button type="submit" id="saveSettings">Save settings</button>
+      </form>
+      <p id="settingsNote" class="muted"></p>
+    </section>
+  </main>
+
+  <dialog id="resolveDialog">
+    <form id="resolveForm" method="dialog">
+      <h3>Resolve alert: <span id="resolveItem"></span></h3>
+      <label>What happened to this stock?
+        <select name="resolution_action" required>
+          <option value="distributed">Distributed to families</option>
+          <option value="transferred">Transferred to another charity</option>
+          <option value="discarded">Discarded (waste)</option>
+          <option value="other">Other (explain below)</option>
+        </select>
+      </label>
+      <label>Note <textarea name="note" maxlength="300" rows="3"></textarea></label>
+      <p id="resolveMsg" class="message" hidden></p>
+      <div class="row">
+        <button type="button" id="resolveCancel" class="secondary">Cancel</button>
+        <button type="submit" value="confirm">Resolve</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/alerts.js"></script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Log in - Food Bank</title>
+  <link rel="stylesheet" href="css/app.css" />
+</head>
+<body class="center">
+  <!-- SHARED page (authentication is led by Momen). Kept minimal so Nancy's pages can be tested. -->
+  <main class="card narrow">
+    <h1>Food Bank staff login</h1>
+    <form id="loginForm" novalidate>
+      <label>Email <input type="email" id="email" required autocomplete="username" /></label>
+      <label>Password <input type="password" id="password" required autocomplete="current-password" /></label>
+      <button type="submit">Log in</button>
+    </form>
+    <p id="msg" class="message" hidden></p>
+  </main>
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/login.js"></script>
+</body>
+</html>
