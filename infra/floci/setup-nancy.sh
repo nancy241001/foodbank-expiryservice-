@@ -132,24 +132,25 @@ for G in /foodbank/api "/aws/lambda/${API_FN}" "/aws/lambda/${FN}"; do
   aws logs create-log-group --log-group-name "$G" 2>/dev/null || true
   aws logs put-retention-policy --log-group-name "$G" --retention-in-days 14   # cost control
 done
-# Counts every 403 (role or ownership refusal) - a spike can mean someone is probing other users' data.
+# Lambda prefixes each log line with a timestamp and request id, so a JSON filter ({ $.status = 403 }) never matches;
+# plain term filters on the event names do. Counts every 403 (role or ownership refusal) - a spike can mean someone is probing other users' data.
 # Applied to the Lambda's log group (deployed) and /foodbank/api (when the backend runs locally against Floci).
 for G in "/aws/lambda/${API_FN}" /foodbank/api; do
   aws logs put-metric-filter --log-group-name "$G" --filter-name access-denied-403 \
-    --filter-pattern '{ $.status = 403 }' \
+    --filter-pattern '?ACCESS_DENIED_ROLE ?ACCESS_DENIED_OWNERSHIP' \
     --metric-transformations metricName=AccessDenied403,metricNamespace=FoodBank/Security,metricValue=1,defaultValue=0
   # Counts rejected tokens (forged/expired) - brute force or token tampering indicator.
   aws logs put-metric-filter --log-group-name "$G" --filter-name invalid-tokens \
-    --filter-pattern '{ $.event = "AUTH_INVALID_TOKEN" }' \
+    --filter-pattern '"AUTH_INVALID_TOKEN"' \
     --metric-transformations metricName=InvalidTokens,metricNamespace=FoodBank/Security,metricValue=1,defaultValue=0
   # Counts failed calls to Mohamed's inventory-service (cross-service health).
   aws logs put-metric-filter --log-group-name "$G" --filter-name inventory-unreachable \
-    --filter-pattern '{ $.event = "INVENTORY_SERVICE_UNREACHABLE" }' \
+    --filter-pattern '"INVENTORY_SERVICE_UNREACHABLE"' \
     --metric-transformations metricName=InventoryCallFailures,metricNamespace=FoodBank/Alerts,metricValue=1,defaultValue=0
 done
 # Counts failed scheduled scans.
 aws logs put-metric-filter --log-group-name "/aws/lambda/${FN}" --filter-name scan-failed \
-  --filter-pattern '{ $.event = "ALERT_SCAN_FAILED" }' \
+  --filter-pattern '"ALERT_SCAN_FAILED"' \
   --metric-transformations metricName=ScanFailures,metricNamespace=FoodBank/Alerts,metricValue=1,defaultValue=0
 
 aws cloudwatch put-metric-alarm --alarm-name foodbank-many-403s --namespace FoodBank/Security --metric-name AccessDenied403 \
