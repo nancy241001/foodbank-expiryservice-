@@ -50,6 +50,12 @@
   function handle(method, path, body) {
     const [p, query = ''] = path.split('?');
     const q = new URLSearchParams(query);
+    if (p === '/api/reports/dashboard') {
+      const sm = summary();
+      return { alerts: { expired: sm.expired, critical: sm.critical, warning: sm.warning },
+        stock: { total_quantity: 640, expiring_soon_quantity: 157, at_risk_percent: 28 },
+        last_7_days: { distributions: 12, families_served: 38, quantity: 160 } };
+    }
     if (p === '/api/alerts/summary') return summary();
     if (p === '/api/alerts/settings') { if (method === 'PUT') Object.assign(settings, body); return { ...settings }; }
     if (p === '/api/alerts/scan') return { created: 0, escalated: 1, auto_resolved: 0, active_alerts: summary().active, email: 'disabled' };
