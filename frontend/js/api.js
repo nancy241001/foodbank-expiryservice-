@@ -7,8 +7,8 @@ const Api = (() => {
   const USER_KEY = 'fb_user';
 
   // sessionStorage: the token disappears when the tab is closed (safer than localStorage on shared PCs).
-  const getToken = () => sessionStorage.getItem(TOKEN_KEY);
-  const getUser = () => JSON.parse(sessionStorage.getItem(USER_KEY) || 'null');
+  const getToken = () => (window.DEMO ? 'demo' : sessionStorage.getItem(TOKEN_KEY));
+  const getUser = () => (window.DEMO ? window.DEMO.user : JSON.parse(sessionStorage.getItem(USER_KEY) || 'null'));
 
   function saveLogin({ token, user }) {
     sessionStorage.setItem(TOKEN_KEY, token);
@@ -27,6 +27,7 @@ const Api = (() => {
   }
 
   async function request(method, path, body) {
+    if (window.DEMO) return window.DEMO.handle(method, path, body); // demo mode only (see js/demo.js)
     const headers = { 'Content-Type': 'application/json' };
     const token = getToken();
     if (token) headers.Authorization = `Bearer ${token}`;
